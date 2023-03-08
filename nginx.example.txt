@@ -1,0 +1,35 @@
+server {
+        listen 80;
+        listen [::]:80;
+
+        server_name backend.starter.local;
+        root /home/ahmad-x/html/backend_starter/public;
+	index index.php index.html;
+	
+	location ~ \.php$ {
+                include snippets/fastcgi-php.conf;
+                fastcgi_pass unix:/var/run/php/php7.4-fpm.sock;
+		fastcgi_read_timeout 300;
+        }
+	location / {
+                try_files $uri $uri/ /index.php?$query_string;
+        }
+
+}
+
+server {
+        listen 80;
+        listen [::]:80;
+
+        server_name starter.local;
+        index index.php index.html;
+
+        location / {
+                proxy_pass http://localhost:3700;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection 'upgrade';
+                proxy_set_header Host $host;
+                proxy_cache_bypass $http_upgrade;
+        }
+}
